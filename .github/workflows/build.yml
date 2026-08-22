@@ -17,14 +17,6 @@ jobs:
             target: x86_64-pc-windows-msvc
             artifact_name: bad_apple.exe
             asset_name: bad_apple-windows
-          - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-            artifact_name: bad_apple
-            asset_name: bad_apple-linux
-          - os: macos-latest
-            target: x86_64-apple-darwin
-            artifact_name: bad_apple
-            asset_name: bad_apple-macos
 
     runs-on: ${{ matrix.os }}
     name: Build on ${{ matrix.os }}
@@ -67,7 +59,7 @@ jobs:
 
     - name: Upload artifact (Unix)
       if: matrix.os != 'windows-latest'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.asset_name }}
         path: target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
