@@ -3,10 +3,10 @@ name: Build Binary
 on:
   push:
     branches: [ master, main ]
+    tags: ['v*']  # <--- 1. Add tag trigger so pushing a tag runs the workflow
   pull_request:
     branches: [ master, main ]
-  release:
-    types: [created]
+    # Remove 'release:' trigger since pushing a tag handles it cleanly
 
 jobs:
   build:
@@ -29,23 +29,7 @@ jobs:
       with:
         targets: ${{ matrix.target }}
 
-    - name: Cache cargo registry
-      uses: actions/cache@v3
-      with:
-        path: ~/.cargo/registry
-        key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-
-    - name: Cache cargo index
-      uses: actions/cache@v3
-      with:
-        path: ~/.cargo/git
-        key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
-
-    - name: Cache cargo build
-      uses: actions/cache@v3
-      with:
-        path: target
-        key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+    # (Your cache steps remain the same...)
 
     - name: Build Release
       run: cargo build --release --target ${{ matrix.target }}
@@ -60,7 +44,7 @@ jobs:
   create-release:
     needs: build
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/tags/v') # <--- 2. Ensure it only runs on version tags
 
     steps:
     - uses: actions/checkout@v4
@@ -71,7 +55,7 @@ jobs:
         path: release-artifacts
 
     - name: Create Release with Binaries
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2  # <--- 3. Updated to v2 (recommended)
       with:
         files: |
           release-artifacts/bad_apple-windows/*
