@@ -75,8 +75,6 @@ jobs:
       with:
         files: |
           release-artifacts/bad_apple-windows/*
-          release-artifacts/bad_apple-linux/*
-          release-artifacts/bad_apple-macos/*
         draft: false
         prerelease: false
       env:
